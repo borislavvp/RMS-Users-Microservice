@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "bgS6zLTXVQdp2+cvUj9Tb4R+Tf7Gf1r1MHH+Ezg2xKRsvewWhUrNKELUDbgmwagWb9oCEf3CIscA8wZhA+mSgw==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\lyubo\\Desktop\\ProEP\\Microservices\\Users-Microservice\\UsersMicroservice\\PresentationLayer\\PresentationLayer.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\lyubo\\.nuget\\packages\\microsoft.extensions.apidescription.server\\3.0.0\\microsoft.extensions.apidescription.server.3.0.0.nupkg.sha512",
+    "C:\\Users\\lyubo\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
+    "C:\\Users\\lyubo\\.nuget\\packages\\swashbuckle.aspnetcore\\5.6.3\\swashbuckle.aspnetcore.5.6.3.nupkg.sha512",
+    "C:\\Users\\lyubo\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\5.6.3\\swashbuckle.aspnetcore.swagger.5.6.3.nupkg.sha512",
+    "C:\\Users\\lyubo\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\5.6.3\\swashbuckle.aspnetcore.swaggergen.5.6.3.nupkg.sha512",
+    "C:\\Users\\lyubo\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\5.6.3\\swashbuckle.aspnetcore.swaggerui.5.6.3.nupkg.sha512"
+  ],
+  "logs": []
+}
