@@ -13,6 +13,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Users.API.Controllers;
 using Users.Data;
 using Users.Data.Models;
@@ -44,25 +45,25 @@ namespace Users.API
                 options.AddDefaultPolicy(
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:4200");
+                        builder.WithOrigins("https://localhost:4200")
+                        .AllowCredentials()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
                     });
             });
-            //services.AddCors(options =>
-            //{
-            //    options.AddPolicy("CorsPolicy",
-            //        builder => builder
-            //        .SetIsOriginAllowed((host) => true)
-            //        .WithOrigins("http://localhost:4200")
-            //        .AllowAnyMethod()
-            //        .AllowAnyHeader()
-            //        .AllowCredentials());
-            //});
+           
             services.AddSingleton<ICorsPolicyService>((container) => {
                 var logger = container.GetRequiredService<ILogger<DefaultCorsPolicyService>>();
                 return new DefaultCorsPolicyService(logger)
                 {
-                    AllowedOrigins = { "http://localhost:4200" }
+                    AllowedOrigins = { "https://localhost:4200" }
                 };
+            });
+            services.ConfigureApplicationCookie(config =>
+            {
+                config.Cookie.Name = "IdentityServer.Cookie";
+                config.LoginPath = "/api/1";
+                config.LogoutPath = "/api/1";
             });
             services.AddScoped<IProfileService, ProfileService>();
 

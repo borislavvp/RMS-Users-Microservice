@@ -43,15 +43,16 @@ namespace Users.API.Controllers
 
         [HttpGet]
         [Route("1")]
-        public async Task<ActionResult> Test()
+        public async Task<ActionResult> Test(string asd2)
         {
-            var user = new ApplicationUser { Email = "asd@abv.bg",
+            var user = new ApplicationUser {
+                Email = "asd@abv.bg",
                 FirstName = "asd",
                 LastName = "asd" ,
                 Address="asd",
                 PhoneNumber="0878833290",
                 Subject = new Guid().ToString(),
-                Role=new IdentityRole("Customer"),
+                Role = new IdentityRole("Customer"),
                 UserName = "asd"
             };
             IdentityResult result = await _userManager.CreateAsync(user, "My@Password212");
