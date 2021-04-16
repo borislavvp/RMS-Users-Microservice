@@ -29,24 +29,21 @@ namespace Users.Data.Configuration
                     ClientName = "TestAPI",
                     ClientId = "testApi",
                     AllowedGrantTypes = GrantTypes.Code,
-                    RequirePkce = false,
+                    RequireClientSecret = false,
+                    RequirePkce = true,
                     RequireConsent = false,
                     RedirectUris = new List<string>()
                     {
-                        "https://localhost:4200/signin-oidc"
+                        "https://localhost:4200/response"
                     },
                     PostLogoutRedirectUris = new List<string>()
                     {
-                        "https://localhost:4200/signout-callback-oidc"
+                        "https://localhost:4200/response"
                     },
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                    },
-                    ClientSecrets =
-                    {
-                        new Secret("secret".Sha256())
                     }
                 }
             };

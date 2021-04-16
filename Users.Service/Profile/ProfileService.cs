@@ -83,8 +83,8 @@ namespace Users.API.Controllers
             if (!string.IsNullOrWhiteSpace(user.Address))
                 claims.Add(new Claim("address", user.Address));
 
-            if (!string.IsNullOrWhiteSpace(user.Role.Name))
-                claims.Add(new Claim("role", user.Role.Name));
+            //if (!string.IsNullOrWhiteSpace(user.Role.Name))
+            //    claims.Add(new Claim("role", user.Role.Name));
             
             if (!string.IsNullOrWhiteSpace(user.UserName))
                 claims.Add(new Claim("UserName", user.UserName));
