@@ -31,13 +31,10 @@ namespace Users.Data.Configuration
             {
                  new Client
                 {
-                    AccessTokenLifetime = 50, // 2 hours
+                    AccessTokenLifetime = 90,
                     //AccessTokenLifetime = 60*60*2, // 2 hours
-                    //IdentityTokenLifetime= 60*60*2 // 2 hours
-                    AllowOfflineAccess = true,
+                    AllowAccessTokensViaBrowser = true,
                     UpdateAccessTokenClaimsOnRefresh = true,
-                    SlidingRefreshTokenLifetime = 30,
-                    RefreshTokenUsage = TokenUsage.OneTimeOnly,
                     ClientName = "TestAPI",
                     ClientId = "testApi",
                     AllowedGrantTypes = GrantTypes.Code,
@@ -47,7 +44,7 @@ namespace Users.Data.Configuration
                     RedirectUris = new List<string>()
                     {
                         $"{configuration.GetValue<string>("CustomerWebsiteURL")}/signin-oidc",
-                        $"{configuration.GetValue<string>("CustomerWebsiteURL")}/silent-renew",
+                        $"{configuration.GetValue<string>("CustomerWebsiteURL")}/assets/silent-callback.html",
                     },
                     PostLogoutRedirectUris = new List<string>()
                     {
@@ -57,7 +54,10 @@ namespace Users.Data.Configuration
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        IdentityServerConstants.StandardScopes.OfflineAccess
+                    },
+                    AllowedCorsOrigins =
+                    {
+                        $"{configuration.GetValue<string>("CustomerWebsiteURL")}"
                     }
                 }
             };

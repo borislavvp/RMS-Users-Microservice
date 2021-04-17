@@ -48,7 +48,7 @@ namespace Users.API
                 options.AddDefaultPolicy(
                     builder =>
                     {
-                        builder.WithOrigins("https://localhost:4200")
+                        builder.WithOrigins("http://localhost:4200")
                         .AllowCredentials()
                         .AllowAnyMethod()
                         .AllowAnyHeader();
@@ -59,7 +59,7 @@ namespace Users.API
                 var logger = container.GetRequiredService<ILogger<DefaultCorsPolicyService>>();
                 return new DefaultCorsPolicyService(logger)
                 {
-                    AllowedOrigins = { "https://localhost:4200" }
+                    AllowedOrigins = { "http://localhost:4200" }
                 };
             });
 
@@ -80,7 +80,6 @@ namespace Users.API
                 options.Events.RaiseSuccessEvents = true;
                 options.EmitStaticAudienceClaim = true;
                 options.Authentication.CookieLifetime = TimeSpan.FromHours(1);
-                options.Authentication.CookieSlidingExpiration = true;
             })
             .AddDeveloperSigningCredential()
             .AddAspNetIdentity<ApplicationUser>()
