@@ -10,7 +10,6 @@ namespace Users.Data.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        [MaxLength(200)]
         [Required]
         public string Subject { get; set; }
         [Required]
