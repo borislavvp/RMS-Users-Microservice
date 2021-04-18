@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
+    <None Remove="Common\Models\RequestResult.cs~RF811b8e3.TMP" />
   </ItemGroup>
 
   <ItemGroup>
