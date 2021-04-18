@@ -41,8 +41,9 @@ namespace Users.API
                 var host = CreateHostBuilder(args).Build();
 
                 Log.Information("Seeding database...");
-                ConfigurationDbContextSeed.SeedData(host.Services.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnection")
-                    ,host.Services.CreateScope()).Wait();
+                ConfigurationDbContextSeed.SeedData(
+                    host.Services.GetRequiredService<IConfiguration>(),
+                    host.Services.CreateScope()).Wait();
                 Log.Information("Done seeding database.");
 
                 Log.Information("Starting host...");

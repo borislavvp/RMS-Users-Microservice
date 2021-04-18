@@ -1,4 +1,6 @@
-﻿using IdentityServer4.Services;
+﻿using IdentityServer4.Events;
+using IdentityServer4.Extensions;
+using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -24,6 +26,7 @@ namespace Users.API.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
         private SignInManager<ApplicationUser> _signInManager;
+        private readonly IEventService _events;
 
         public AuthController(
 
@@ -32,13 +35,15 @@ namespace Users.API.Controllers
             IClientStore clientStore,
             UserManager<ApplicationUser> userManager,
             IConfiguration configuration,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            IEventService events)
         {
             _interaction = interaction;
             _clientStore = clientStore;
             _userManager = userManager;
             _configuration = configuration;
             _signInManager = signInManager;
+            _events = events;
         }
 
         [HttpGet]
@@ -57,9 +62,12 @@ namespace Users.API.Controllers
             };
             IdentityResult result = await _userManager.CreateAsync(user, "My@Password212");
             var t = await _userManager.FindByEmailAsync(user.Email);
+
+            await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Subject, user.UserName, clientId: user.Id));
+
             var props = new AuthenticationProperties
             {
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(20),
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(2),
                 AllowRefresh = true,
             };
 
@@ -69,12 +77,32 @@ namespace Users.API.Controllers
         }
         
         [HttpGet]
-        [Authorize]
-        [Route("2")]
-        public ActionResult Test2()
+        [Route("3")]
+        public async Task<ActionResult> Test3()
         {
             var asd = User;
-            return Ok();
+            var returnUrl = "https://localhost:4200";
+            var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+
+            return new RedirectResult(returnUrl);
+        }
+        [HttpGet]
+        [Authorize]
+        [Route("2")]
+        public async Task<ActionResult> Test2(string logoutId)
+        {
+            var asd = User;
+            await _signInManager.SignOutAsync();
+
+            var returnUrl = "https://localhost:4200/signin-oidc";
+            var context = await _interaction.GetLogoutContextAsync(logoutId);
+            // raise the logout event
+            await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
+
+            // this triggers a redirect to the external provider for sign-out
+            return new RedirectResult(context.PostLogoutRedirectUri + "?logoutId=" + logoutId);
+            //return new RedirectResult(returnUrl);
+            //return Ok();
         }
     }
 }
