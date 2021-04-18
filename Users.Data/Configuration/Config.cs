@@ -7,6 +7,9 @@ namespace Users.Data.Configuration
 {
     public static class Config
     {
+        private static readonly string WEBSITE_NAME = "TEST_WEBSITE";
+        private static readonly string WEBSITE_ID = "TEST_WEBSITE_ID";
+
         public static IEnumerable<IdentityResource> IdentityResources =>
             new IdentityResource[]
             {
@@ -35,20 +38,21 @@ namespace Users.Data.Configuration
                     //AccessTokenLifetime = 60*60*2, // 2 hours
                     AllowAccessTokensViaBrowser = true,
                     UpdateAccessTokenClaimsOnRefresh = true,
-                    ClientName = "TestAPI",
-                    ClientId = "testApi",
+                    ClientName = WEBSITE_NAME,
+                    ClientId = WEBSITE_ID,
+                    ClientUri = $"{configuration.GetValue<string>(WEBSITE_NAME)}",
                     AllowedGrantTypes = GrantTypes.Code,
                     RequireClientSecret = false,
                     RequirePkce = true,
                     RequireConsent = false,
                     RedirectUris = new List<string>()
                     {
-                        $"{configuration.GetValue<string>("CustomerWebsiteURL")}/signin-oidc",
-                        $"{configuration.GetValue<string>("CustomerWebsiteURL")}/assets/silent-callback.html",
+                        $"{configuration.GetValue<string>(WEBSITE_NAME)}/signin-oidc",
+                        $"{configuration.GetValue<string>(WEBSITE_NAME)}/assets/silent-callback.html",
                     },
                     PostLogoutRedirectUris = new List<string>()
                     {
-                        $"{configuration.GetValue<string>("CustomerWebsiteURL")}/signout-callback-oidc"
+                        $"{configuration.GetValue<string>(WEBSITE_NAME)}/signout-callback-oidc"
                     },
                     AllowedScopes =
                     {
@@ -57,7 +61,7 @@ namespace Users.Data.Configuration
                     },
                     AllowedCorsOrigins =
                     {
-                        $"{configuration.GetValue<string>("CustomerWebsiteURL")}"
+                        $"{configuration.GetValue<string>(WEBSITE_NAME)}"
                     }
                 }
             };

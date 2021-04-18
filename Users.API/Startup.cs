@@ -3,22 +3,17 @@ using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Users.API.Controllers;
 using Users.Data;
 using Users.Data.Models;
-using Users.Data.Seed;
+using Users.Service;
 
 namespace Users.API
 {
@@ -48,7 +43,7 @@ namespace Users.API
                 options.AddDefaultPolicy(
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:4200")
+                        builder.WithOrigins("https://localhost:4200")
                         .AllowCredentials()
                         .AllowAnyMethod()
                         .AllowAnyHeader();
@@ -59,18 +54,20 @@ namespace Users.API
                 var logger = container.GetRequiredService<ILogger<DefaultCorsPolicyService>>();
                 return new DefaultCorsPolicyService(logger)
                 {
-                    AllowedOrigins = { "http://localhost:4200" }
+                    AllowedOrigins = { "https://localhost:4200" }
                 };
             });
 
             services.ConfigureApplicationCookie(config =>
             {
                 config.Cookie.Name = "IdentityServer.Cookie";
-                config.LoginPath = "/api/3";
-                config.LogoutPath = "/api/2";
+                config.LoginPath = "/api/redirect/login";
+                config.LogoutPath = "/api/logout";
             });
 
             services.AddScoped<IProfileService, ProfileService>();
+            services.AddScoped<UsersService, UsersService>();
+
             services.AddIdentityServer(options =>
             {
                 options.IssuerUri = Configuration.GetValue<string>("IssuerUri");
