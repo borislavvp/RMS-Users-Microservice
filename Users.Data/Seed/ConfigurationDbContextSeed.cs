@@ -16,12 +16,6 @@ namespace Users.Data.Seed
     {
         public static async Task SeedData(IConfiguration configuration,IServiceScope scope)
         {
-            var services = new ServiceCollection();
-            var serviceProvider = services.BuildServiceProvider();
-            services.AddConfigurationDbContext(options =>
-            {
-                options.ConfigureDbContext = db => db.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), sql => sql.MigrationsAssembly(typeof(ConfigurationDbContext).Assembly.FullName));
-            });
             var context = scope.ServiceProvider.GetService<ConfigurationDbContext>();
             context.Database.Migrate();
             await SeedAsync(configuration,context);
