@@ -13,6 +13,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Users.Data.Models;
+using Users.Service;
+using Users.Service.Common.Dtos;
+using Users.Service.Common.Interfaces;
+using Users.Service.Models;
 
 namespace Users.API.Controllers
 {
@@ -21,88 +25,88 @@ namespace Users.API.Controllers
     public class AuthController : ControllerBase
     {
 
-        private readonly IIdentityServerInteractionService _interaction;
-        private readonly IClientStore _clientStore;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IConfiguration _configuration;
-        private SignInManager<ApplicationUser> _signInManager;
-        private readonly IEventService _events;
+        private readonly UsersService _usersService;
 
-        public AuthController(
-
-            //InMemoryUserLoginService loginService,
-            IIdentityServerInteractionService interaction,
-            IClientStore clientStore,
-            UserManager<ApplicationUser> userManager,
-            IConfiguration configuration,
-            SignInManager<ApplicationUser> signInManager,
-            IEventService events)
+        public AuthController(UsersService usersService)
         {
-            _interaction = interaction;
-            _clientStore = clientStore;
-            _userManager = userManager;
-            _configuration = configuration;
-            _signInManager = signInManager;
-            _events = events;
+            _usersService = usersService;
         }
 
-        [HttpGet]
-        [Route("1")]
-        public async Task<ActionResult> Test(string asd2)
+        [HttpPost]
+        [Route("register")]
+        public async Task<ActionResult> Register(UserRegisterDTO userRegistrationModel)
         {
-            var user = new ApplicationUser {
-                Email = "asd@abv.bg",
-                FirstName = "asd",
-                LastName = "asd" ,
-                Address="asd",
-                PhoneNumber="0878833290",
-                Subject = new Guid().ToString(),
-                Role = new IdentityRole("Customer"),
-                UserName = "asd"
-            };
-            IdentityResult result = await _userManager.CreateAsync(user, "My@Password212");
-            var t = await _userManager.FindByEmailAsync(user.Email);
-
-            await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Subject, user.UserName, clientId: user.Id));
-
-            var props = new AuthenticationProperties
+            try
             {
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(2),
-                AllowRefresh = true,
-            };
+                IRequestResult result = await _usersService.RegisterUser(userRegistrationModel);
 
-            await _signInManager.SignInAsync(t, props);
-            var asd = User;
-            return Ok();
+                if (result.IsSuccess)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest(result.FailureReason);
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
         
         [HttpGet]
-        [Route("3")]
-        public async Task<ActionResult> Test3()
+        [Route("redirect/login")]
+        public async Task<ActionResult> LoginRedirect(string returnUrl)
         {
-            var asd = User;
-            var returnUrl = "https://localhost:4200";
-            var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-
-            return new RedirectResult(returnUrl);
+            try
+            {
+                 IRequestResult<string> result = await _usersService.GetLoginRedirectPageUriAsync(returnUrl);
+                 return result.IsSuccess ? new RedirectResult(result.Data) : BadRequest(result.FailureReason);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
+        
+        [HttpPost]
+        [Route("login")]
+        public async Task<ActionResult> Login(UserLoginDTO userLoginModel)
+        {
+            try
+            {
+                IRequestResult result = await _usersService.Login(userLoginModel);
+                return result.IsSuccess ? Ok() : BadRequest(result.FailureReason);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
         [HttpGet]
         [Authorize]
-        [Route("2")]
-        public async Task<ActionResult> Test2(string logoutId)
+        [Route("logout")]
+        public async Task<ActionResult> Logout(string logoutId)
         {
-            var asd = User;
-            await _signInManager.SignOutAsync();
+            try
+            {
+                IRequestResult<string> result = await _usersService.Logout(User.Identity.IsAuthenticated, logoutId, User.GetSubjectId(), User.GetDisplayName());
 
-            var returnUrl = "https://localhost:4200/signin-oidc";
-            var context = await _interaction.GetLogoutContextAsync(logoutId);
-            // raise the logout event
-            await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
-
-            // this triggers a redirect to the external provider for sign-out
-            return new RedirectResult(context.PostLogoutRedirectUri + "?logoutId=" + logoutId);
-            //return new RedirectResult(returnUrl);
-            //return Ok();
+                if (result.IsSuccess)
+                {
+                    return new RedirectResult(result.Data);
+                }
+                else
+                {
+                    return BadRequest(result.FailureReason);
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
     }
 }
