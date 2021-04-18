@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Users.Service.Models
 {
-    public class UserDTO
+    public class UserRegisterDTO
     {
         public string Email { get; set; }
         public string FirstName { get; set; }
