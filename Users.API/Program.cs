@@ -40,11 +40,16 @@ namespace Users.API
             {
                 var host = CreateHostBuilder(args).Build();
 
-                Log.Information("Seeding database...");
+                Log.Information("Seeding identity configurations ...");
                 ConfigurationDbContextSeed.SeedData(
                     host.Services.GetRequiredService<IConfiguration>(),
                     host.Services.CreateScope()).Wait();
-                Log.Information("Done seeding database.");
+                Log.Information("Done seeding identity configurations.");
+                
+                Log.Information("Seeding application database ...");
+                ApplicationUsersDbContextSeed.SeedData(
+                    host.Services.CreateScope()).Wait();
+                Log.Information("Done seeding application database.");
 
                 Log.Information("Starting host...");
                 CreateHostBuilder(args).Build().Run();

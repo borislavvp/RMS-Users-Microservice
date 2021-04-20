@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Users.Data.Models;
 
-namespace Users.API.Controllers
+namespace Users.Service.Profile
 {
     public class ProfileService : IProfileService
     {

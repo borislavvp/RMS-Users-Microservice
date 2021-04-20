@@ -47,7 +47,7 @@ namespace Users.Data.Migrations.ApplicationUsersDb
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Subject = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Subject = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -199,6 +199,12 @@ namespace Users.Data.Migrations.ApplicationUsersDb
                 name: "IX_AspNetUsers_RoleId",
                 table: "AspNetUsers",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_Subject",
+                table: "AspNetUsers",
+                column: "Subject",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",

@@ -10,7 +10,7 @@ using Users.Data;
 namespace Users.Data.Migrations.ApplicationUsersDb
 {
     [DbContext(typeof(ApplicationUsersDbContext))]
-    [Migration("20210411063814_Initial")]
+    [Migration("20210418112121_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -214,8 +214,7 @@ namespace Users.Data.Migrations.ApplicationUsersDb
 
                     b.Property<string>("Subject")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
@@ -235,6 +234,9 @@ namespace Users.Data.Migrations.ApplicationUsersDb
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.HasIndex("RoleId");
+
+                    b.HasIndex("Subject")
+                        .IsUnique();
 
                     b.ToTable("AspNetUsers");
                 });
