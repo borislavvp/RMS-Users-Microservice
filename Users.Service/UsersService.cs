@@ -56,8 +56,8 @@ namespace Users.Service
                 LastName = userModel.LastName,
                 Address = userModel.Address,
                 PhoneNumber = userModel.PhoneNumber,
-                Subject = new Guid().ToString(),
-                Role = new IdentityRole("Customer"),
+                Subject = Guid.NewGuid().ToString(),
+                Role = await _roleManager.FindByNameAsync(RoleConstants.ChorbaDeckCustomer),
                 UserName = userModel.Email
             };
 
