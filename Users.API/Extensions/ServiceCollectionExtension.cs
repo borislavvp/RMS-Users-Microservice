@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Users.Data;
 using Users.Data.Models;
+using Users.Service.Extensions;
 using Users.Service.Profile;
 
 namespace Users.API.Extensions
@@ -39,7 +40,7 @@ namespace Users.API.Extensions
                 options.AddDefaultPolicy(
                     builder =>
                     {
-                        builder.WithOrigins(configuration.GetValue<string>("TEST_WEBSITE"))
+                        builder.WithOrigins(configuration.GetValue<string>("DESKTOP_APP"))
                         .AllowCredentials()
                         .AllowAnyMethod()
                         .AllowAnyHeader();
@@ -51,7 +52,7 @@ namespace Users.API.Extensions
                 var logger = container.GetRequiredService<ILogger<DefaultCorsPolicyService>>();
                 return new DefaultCorsPolicyService(logger)
                 {
-                    AllowedOrigins = { configuration.GetValue<string>("TEST_WEBSITE") }
+                    AllowedOrigins = { configuration.GetValue<string>("DESKTOP_APP") }
                 };
             });
             return services;
@@ -102,6 +103,7 @@ namespace Users.API.Extensions
                         sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
                     });
             })
+            .AddExtensionGrantValidator<TokenExchangeExtensionGrantValidator>()
             .Services.AddTransient<IProfileService, ProfileService>();
             return services;
         }
