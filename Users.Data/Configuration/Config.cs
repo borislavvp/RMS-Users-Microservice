@@ -88,6 +88,38 @@ namespace Users.Data.Configuration
                     {
                         AppSettingsHelper.DESKTOP_APP_URI(configuration)
                     }
+                },
+                new Client
+                {
+                    AccessTokenLifetime = 60*60*2, // 2 hours
+                    AllowAccessTokensViaBrowser = true,
+                    UpdateAccessTokenClaimsOnRefresh = true,
+                    ClientName = WEBSITE_NAME,
+                    ClientId = WEBSITE_ID,
+                    ClientUri = $"{configuration.GetValue<string>(WEBSITE_NAME)}",
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequireClientSecret = false,
+                    RequirePkce = true,
+                    RequireConsent = false,
+                    RedirectUris = new List<string>()
+                    {
+                        $"{configuration.GetValue<string>(WEBSITE_NAME)}/signin-oidc",
+                        $"{configuration.GetValue<string>(WEBSITE_NAME)}/assets/silent-callback.html",
+                    },
+                    PostLogoutRedirectUris = new List<string>()
+                    {
+                        $"{configuration.GetValue<string>(WEBSITE_NAME)}/signout-callback-oidc"
+                    },
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "proeprestaurantgateway.fullaccess",
+                    },
+                    AllowedCorsOrigins =
+                    {
+                        $"{configuration.GetValue<string>(WEBSITE_NAME)}"
+                    }
                 }
             };
     }
