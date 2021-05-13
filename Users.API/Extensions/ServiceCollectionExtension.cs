@@ -40,7 +40,10 @@ namespace Users.API.Extensions
                 options.AddDefaultPolicy(
                     builder =>
                     {
-                        builder.WithOrigins(configuration.GetValue<string>("DESKTOP_APP"))
+                        builder.WithOrigins(
+                            configuration.GetValue<string>("DESKTOP_APP"),
+                            configuration.GetValue<string>("WEBSITE_APP")
+                           )
                         .AllowCredentials()
                         .AllowAnyMethod()
                         .AllowAnyHeader();
@@ -52,7 +55,10 @@ namespace Users.API.Extensions
                 var logger = container.GetRequiredService<ILogger<DefaultCorsPolicyService>>();
                 return new DefaultCorsPolicyService(logger)
                 {
-                    AllowedOrigins = { configuration.GetValue<string>("DESKTOP_APP") }
+                    AllowedOrigins = { 
+                        configuration.GetValue<string>("DESKTOP_APP"),
+                        configuration.GetValue<string>("WEBSITE_APP")
+                    }
                 };
             });
             return services;
