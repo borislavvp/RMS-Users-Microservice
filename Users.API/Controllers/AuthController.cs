@@ -72,7 +72,7 @@ namespace Users.API.Controllers
         
         [HttpPost]
         [Route("login")]
-        public async Task<ActionResult> LoginRestaurant(UserLoginDTO userLoginModel)
+        public async Task<ActionResult> Login(UserLoginDTO userLoginModel)
         {
             try
             {
