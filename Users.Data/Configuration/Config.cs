@@ -88,6 +88,37 @@ namespace Users.Data.Configuration
                     {
                         AppSettingsHelper.DESKTOP_APP_URI(configuration)
                     }
+                },
+                new Client
+                {
+                    AccessTokenLifetime = 60*60*2, // 2 hours
+                    AllowAccessTokensViaBrowser = true,
+                    UpdateAccessTokenClaimsOnRefresh = true,
+                    ClientName = AppSettingsHelper.WEBSITE_NAME(configuration),
+                    ClientId = AppSettingsHelper.WEBSITE_ID(configuration),
+                    ClientUri = AppSettingsHelper.WEBSITE_URI(configuration),
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequireClientSecret = false,
+                    RequirePkce = true,
+                    RequireConsent = false,
+                    RedirectUris = new List<string>()
+                    {
+                        $"{AppSettingsHelper.WEBSITE_URI(configuration)}/signin-oidc",
+                        $"{AppSettingsHelper.WEBSITE_URI(configuration)}/assets/silent-callback.html",
+                    },
+                    PostLogoutRedirectUris = new List<string>()
+                    {
+                        $"{AppSettingsHelper.WEBSITE_URI(configuration)}/signout-callback-oidc"
+                    },
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile
+                    },
+                    AllowedCorsOrigins =
+                    {
+                        AppSettingsHelper.WEBSITE_URI(configuration)
+                    }
                 }
             };
     }
