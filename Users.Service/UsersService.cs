@@ -4,12 +4,14 @@ using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Users.Data.Configuration;
 using Users.Data.Models;
 using Users.Service.Common.Dtos;
 using Users.Service.Common.Interfaces;
@@ -62,6 +64,7 @@ namespace Users.Service
             };
 
             var result = await _userManager.CreateAsync(user, userModel.Password);
+            await _userManager.AddToRoleAsync(user, (RoleConstants.ChorbaDeckCustomer));
 
             // If creation of the user fails return a failure
             if (!result.Succeeded)
@@ -71,14 +74,29 @@ namespace Users.Service
                 return await SignInUser(user.Email);
         }
 
-        public async Task<IRequestResult> Login(UserLoginDTO userLoginModel)
+        public async Task<IRequestResult> Login(UserLoginDTO userLoginModel,string requestOrigin)
         {
+            if (String.IsNullOrWhiteSpace(requestOrigin))
+            {
+                return RequestResult.Failure("Invalid request!");
+            }
             var user = await _userManager.FindByEmailAsync(userLoginModel.Email);
 
             if(user == null)
             {
                 return RequestResult.Failure("There is no user in the system with that email!");
             }
+
+            if(AppSettingsHelper.DESKTOP_APP_URI(_configuration).Equals(requestOrigin) && !await _userManager.IsInRoleAsync(user, RoleConstants.ChorbaDeckAdmin))
+            {
+                return RequestResult.Failure("Access denied!");
+            }
+
+            /** Commented out for now, until we add the mobile application client **/
+            //if (AppSettingsHelper.MOBILE_APP(_configuration).Equals(requestOrigin) && !await _userManager.IsInRoleAsync(user, RoleConstants.ChorbaDeckDriver))
+            //{
+            //    return RequestResult.Failure("Access denied!");
+            //}
 
             if(await _userManager.CheckPasswordAsync(user, userLoginModel.Password))
             {
@@ -93,7 +111,7 @@ namespace Users.Service
         
         private async Task<IRequestResult> SignInUser(string userEmail)
         {
-            var userToLogin = await _userManager.FindByEmailAsync(userEmail);
+            var userToLogin = await _userManager.Users.Include(u => u.Role).Where(u => u.Email.Equals(userEmail)).FirstOrDefaultAsync();
 
             if(userToLogin.Id == null)
             {
@@ -107,7 +125,7 @@ namespace Users.Service
                 ExpiresUtc = DateTimeOffset.UtcNow.AddHours(2),
                 AllowRefresh = true,
             };
-
+           
             // This is going to set the auth cookie in the users browser
             await _signInManager.SignInAsync(userToLogin, props);
 
@@ -144,8 +162,7 @@ namespace Users.Service
                 return RequestResult<string>.Failure("Invalid request!");
             }
 
-            return RequestResult<string>.Success(
-                $"{context.Client.ClientUri}{_configuration.GetValue<string>($"{context.Client.ClientName}-LoginPath")}");
+            return RequestResult<string>.Success(AppSettingsHelper.CLIENT_LOGIN_PATH(_configuration, context.Client.ClientUri));
         }
         
     }

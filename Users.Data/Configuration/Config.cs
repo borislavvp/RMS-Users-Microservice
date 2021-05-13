@@ -7,9 +7,6 @@ namespace Users.Data.Configuration
 {
     public static class Config
     {
-        private static readonly string DESKTOP_NAME = "DESKTOP_APP";
-        private static readonly string DESKTOP_ID = "DESKTOP_APP_ID";
-
         public static IEnumerable<IdentityResource> IdentityResources =>
             new IdentityResource[]
             {
@@ -65,21 +62,21 @@ namespace Users.Data.Configuration
                     AccessTokenLifetime = 60*60*2, // 2 hours
                     AllowAccessTokensViaBrowser = true,
                     UpdateAccessTokenClaimsOnRefresh = true,
-                    ClientName = DESKTOP_NAME,
-                    ClientId = DESKTOP_ID,
-                    ClientUri = $"{configuration.GetValue<string>(DESKTOP_NAME)}",
+                    ClientName = AppSettingsHelper.DESKTOP_APP_NAME(configuration),
+                    ClientId = AppSettingsHelper.DESKTOP_APP_ID(configuration),
+                    ClientUri = AppSettingsHelper.DESKTOP_APP_URI(configuration),
                     AllowedGrantTypes = GrantTypes.Code,
                     RequireClientSecret = false,
                     RequirePkce = true,
                     RequireConsent = false,
                     RedirectUris = new List<string>()
                     {
-                        $"{configuration.GetValue<string>(DESKTOP_NAME)}/signin-oidc",
-                        $"{configuration.GetValue<string>(DESKTOP_NAME)}/assets/silent-callback.html",
+                        $"{AppSettingsHelper.DESKTOP_APP_URI(configuration)}/signin-oidc",
+                        $"{AppSettingsHelper.DESKTOP_APP_URI(configuration)}/assets/silent-callback.html",
                     },
                     PostLogoutRedirectUris = new List<string>()
                     {
-                        $"{configuration.GetValue<string>(DESKTOP_NAME)}/signout-callback-oidc"
+                        $"{AppSettingsHelper.DESKTOP_APP_URI(configuration)}/signout-callback-oidc"
                     },
                     AllowedScopes =
                     {
@@ -89,7 +86,7 @@ namespace Users.Data.Configuration
                     },
                     AllowedCorsOrigins =
                     {
-                        $"{configuration.GetValue<string>(DESKTOP_NAME)}"
+                        AppSettingsHelper.DESKTOP_APP_URI(configuration)
                     }
                 }
             };

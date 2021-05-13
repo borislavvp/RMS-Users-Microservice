@@ -10,5 +10,6 @@ namespace Users.Data.Models
     {
         public const string ChorbaDeckAdmin = "Administrator";
         public const string ChorbaDeckCustomer = "Customer";
+        public const string ChorbaDeckDriver = "Driver";
     }
 }
