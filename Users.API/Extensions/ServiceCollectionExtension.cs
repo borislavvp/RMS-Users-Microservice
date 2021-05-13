@@ -10,9 +10,11 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Users.Data;
+using Users.Data.Configuration;
 using Users.Data.Models;
 using Users.Service.Extensions;
 using Users.Service.Profile;
+using Users.Service.RequestValidators;
 
 namespace Users.API.Extensions
 {
@@ -40,7 +42,7 @@ namespace Users.API.Extensions
                 options.AddDefaultPolicy(
                     builder =>
                     {
-                        builder.WithOrigins(configuration.GetValue<string>("DESKTOP_APP"))
+                        builder.WithOrigins(AppSettingsHelper.DESKTOP_APP_URI(configuration))
                         .AllowCredentials()
                         .AllowAnyMethod()
                         .AllowAnyHeader();
@@ -52,7 +54,7 @@ namespace Users.API.Extensions
                 var logger = container.GetRequiredService<ILogger<DefaultCorsPolicyService>>();
                 return new DefaultCorsPolicyService(logger)
                 {
-                    AllowedOrigins = { configuration.GetValue<string>("DESKTOP_APP") }
+                    AllowedOrigins = { AppSettingsHelper.DESKTOP_APP_URI(configuration) }
                 };
             });
             return services;
@@ -69,11 +71,14 @@ namespace Users.API.Extensions
                 config.Cookie.Name = "IdentityServer.Cookie";
                 config.LoginPath = "/api/redirect/login";
                 config.LogoutPath = "/api/logout";
+                config.AccessDeniedPath = "/api/redirect/login";
+                config.ClaimsIssuer = AppSettingsHelper.AUTH_ISSUER(configuration);
             });
 
             services.AddIdentityServer(options =>
             {
-                options.IssuerUri = configuration.GetValue<string>("IssuerUri");
+                options.IssuerUri = AppSettingsHelper.AUTH_ISSUER(configuration);
+                options.UserInteraction.ErrorUrl = "/api/redirect/login";
                 options.Events.RaiseErrorEvents = true;
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
@@ -86,7 +91,7 @@ namespace Users.API.Extensions
             .AddConfigurationStore(options =>
             {
                 options.ConfigureDbContext = builder => builder.UseSqlServer(
-                    configuration.GetConnectionString("DefaultConnection"),
+                    AppSettingsHelper.DATABASE_CONNECTION(configuration),
                     sqlServerOptionsAction: sqlOptions =>
                     {
                         sqlOptions.MigrationsAssembly(Assembly.GetAssembly(typeof(ApplicationUsersDbContext)).GetName().Name);
@@ -96,7 +101,7 @@ namespace Users.API.Extensions
             .AddOperationalStore(options =>
             {
                 options.ConfigureDbContext = builder => builder.UseSqlServer(
-                    configuration.GetConnectionString("DefaultConnection"),
+                    AppSettingsHelper.DATABASE_CONNECTION(configuration),
                     sqlServerOptionsAction: sqlOptions =>
                     {
                         sqlOptions.MigrationsAssembly(Assembly.GetAssembly(typeof(ApplicationUsersDbContext)).GetName().Name);
@@ -104,6 +109,7 @@ namespace Users.API.Extensions
                     });
             })
             .AddExtensionGrantValidator<TokenExchangeExtensionGrantValidator>()
+            .AddCustomAuthorizeRequestValidator<CustomAuthorizeRequestValidator>()
             .Services.AddTransient<IProfileService, ProfileService>();
             return services;
         }
