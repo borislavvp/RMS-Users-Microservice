@@ -17,7 +17,9 @@ namespace Users.Data.Seed
         public static async Task SeedData(IConfiguration configuration,IServiceScope scope)
         {
             var context = scope.ServiceProvider.GetService<ConfigurationDbContext>();
+            var grantsContext = scope.ServiceProvider.GetService<PersistedGrantDbContext>();
             context.Database.Migrate();
+            grantsContext.Database.Migrate();
             await SeedAsync(configuration,context);
         }
 
