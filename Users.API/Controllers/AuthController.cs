@@ -72,18 +72,18 @@ namespace Users.API.Controllers
         
         [HttpPost]
         [Route("login")]
-        public async Task<ActionResult> Login(UserLoginDTO userLoginModel)
+        public async Task<ActionResult> LoginRestaurant(UserLoginDTO userLoginModel)
         {
             try
             {
-                IRequestResult result = await _usersService.Login(userLoginModel);
+                IRequestResult result = await _usersService.Login(userLoginModel, this.Request.Headers["Origin"]);
                 return result.IsSuccess ? Ok() : BadRequest(result.FailureReason);
             }
             catch (Exception)
             {
                 return BadRequest();
             }
-        }
+        } 
 
         [HttpGet]
         [Authorize]
