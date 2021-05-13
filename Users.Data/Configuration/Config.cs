@@ -94,31 +94,30 @@ namespace Users.Data.Configuration
                     AccessTokenLifetime = 60*60*2, // 2 hours
                     AllowAccessTokensViaBrowser = true,
                     UpdateAccessTokenClaimsOnRefresh = true,
-                    ClientName = WEBSITE_NAME,
-                    ClientId = WEBSITE_ID,
-                    ClientUri = $"{configuration.GetValue<string>(WEBSITE_NAME)}",
+                    ClientName = AppSettingsHelper.WEBSITE_NAME(configuration),
+                    ClientId = AppSettingsHelper.WEBSITE_ID(configuration),
+                    ClientUri = AppSettingsHelper.WEBSITE_URI(configuration),
                     AllowedGrantTypes = GrantTypes.Code,
                     RequireClientSecret = false,
                     RequirePkce = true,
                     RequireConsent = false,
                     RedirectUris = new List<string>()
                     {
-                        $"{configuration.GetValue<string>(WEBSITE_NAME)}/signin-oidc",
-                        $"{configuration.GetValue<string>(WEBSITE_NAME)}/assets/silent-callback.html",
+                        $"{AppSettingsHelper.WEBSITE_URI(configuration)}/signin-oidc",
+                        $"{AppSettingsHelper.WEBSITE_URI(configuration)}/assets/silent-callback.html",
                     },
                     PostLogoutRedirectUris = new List<string>()
                     {
-                        $"{configuration.GetValue<string>(WEBSITE_NAME)}/signout-callback-oidc"
+                        $"{AppSettingsHelper.WEBSITE_URI(configuration)}/signout-callback-oidc"
                     },
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile,
-                        "proeprestaurantgateway.fullaccess",
+                        IdentityServerConstants.StandardScopes.Profile
                     },
                     AllowedCorsOrigins =
                     {
-                        $"{configuration.GetValue<string>(WEBSITE_NAME)}"
+                        AppSettingsHelper.WEBSITE_URI(configuration)
                     }
                 }
             };

@@ -42,7 +42,10 @@ namespace Users.API.Extensions
                 options.AddDefaultPolicy(
                     builder =>
                     {
-                        builder.WithOrigins(AppSettingsHelper.DESKTOP_APP_URI(configuration))
+                        builder.WithOrigins(
+                            AppSettingsHelper.DESKTOP_APP_URI(configuration),
+                            AppSettingsHelper.WEBSITE_URI(configuration)
+                        )
                         .AllowCredentials()
                         .AllowAnyMethod()
                         .AllowAnyHeader();
@@ -54,7 +57,10 @@ namespace Users.API.Extensions
                 var logger = container.GetRequiredService<ILogger<DefaultCorsPolicyService>>();
                 return new DefaultCorsPolicyService(logger)
                 {
-                    AllowedOrigins = { AppSettingsHelper.DESKTOP_APP_URI(configuration) }
+                    AllowedOrigins = { 
+                        AppSettingsHelper.DESKTOP_APP_URI(configuration),
+                        AppSettingsHelper.WEBSITE_URI(configuration)
+                    }
                 };
             });
             return services;
