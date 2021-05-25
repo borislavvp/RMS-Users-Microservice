@@ -55,7 +55,7 @@ namespace Users.Data.Configuration
                     RequireConsent = false,
                     ClientSecrets = { new Secret("0cdea0bc-779e-4368-b46b-09956f70712c".Sha256()) },
                     AllowedScopes = {
-                         "openid", "profile", "orders.read","meals.fullaccess" }
+                         "openid", "profile", "orders.read", "orders.write", "meals.fullaccess" }
                 },
                 new Client
                 {
