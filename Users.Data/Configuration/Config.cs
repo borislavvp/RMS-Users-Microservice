@@ -21,6 +21,7 @@ namespace Users.Data.Configuration
                 new ApiScope("meals.fullaccess"),
                 new ApiScope("basket.fullaccess"),
                 new ApiScope("proeprestaurantgateway.fullaccess"),
+                new ApiScope("proepdriversgateway.fullaccess"),
           };
 
         public static IEnumerable<ApiResource> ApiResources =>
@@ -29,6 +30,10 @@ namespace Users.Data.Configuration
                 new ApiResource("proeprestaurantgateway","Restaurant App Gateway Service")
                 { 
                     Scopes = { "proeprestaurantgateway.fullaccess" }
+                },
+                new ApiResource("proepdriversgateway","Drivers App Gateway Service")
+                { 
+                    Scopes = { "proepdriversgateway.fullaccess" }
                 },
                 new ApiResource("orders","Orders Service")
                 { 
@@ -55,7 +60,17 @@ namespace Users.Data.Configuration
                     RequireConsent = false,
                     ClientSecrets = { new Secret("0cdea0bc-779e-4368-b46b-09956f70712c".Sha256()) },
                     AllowedScopes = {
-                         "openid", "profile", "orders.read","meals.fullaccess" }
+                         "openid", "profile", "orders.read", "orders.write", "meals.fullaccess" }
+                },
+                new Client
+                {
+                    ClientId = "proepdriversgatewaytodownstreamtokenexchangeclient",
+                    ClientName = "Gateway to Downstream Token Exchange Client",
+                    AllowedGrantTypes = new[] { "urn:ietf:params:oauth:grant-type:token-exchange" },
+                    RequireConsent = false,
+                    ClientSecrets = { new Secret("1waer6ty-116e-2579-b65o-12357t14663m".Sha256()) },
+                    AllowedScopes = {
+                         "openid", "profile", "orders.write" }
                 },
                 new Client
                 {
@@ -87,6 +102,38 @@ namespace Users.Data.Configuration
                     AllowedCorsOrigins =
                     {
                         AppSettingsHelper.DESKTOP_APP_URI(configuration)
+                    }
+                }, 
+                new Client
+                {
+                    AccessTokenLifetime = 60*60*2, // 2 hours
+                    AllowAccessTokensViaBrowser = true,
+                    UpdateAccessTokenClaimsOnRefresh = true,
+                    ClientName = AppSettingsHelper.MOBILE_APP_NAME(configuration),
+                    ClientId = AppSettingsHelper.MOBILE_APP_ID(configuration),
+                    ClientUri = AppSettingsHelper.MOBILE_APP_URI(configuration),
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequireClientSecret = false,
+                    RequirePkce = true,
+                    RequireConsent = false,
+                    RedirectUris = new List<string>()
+                    {
+                        $"{AppSettingsHelper.MOBILE_APP_URI(configuration)}/signin-oidc",
+                        $"{AppSettingsHelper.MOBILE_APP_URI(configuration)}/assets/silent-callback.html",
+                    },
+                    PostLogoutRedirectUris = new List<string>()
+                    {
+                        $"{AppSettingsHelper.MOBILE_APP_URI(configuration)}/signout-callback-oidc"
+                    },
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "proepdriversgateway.fullaccess",
+                    },
+                    AllowedCorsOrigins =
+                    {
+                        AppSettingsHelper.MOBILE_APP_URI(configuration)
                     }
                 },
                 new Client
