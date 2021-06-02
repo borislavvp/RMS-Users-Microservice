@@ -44,7 +44,8 @@ namespace Users.API.Extensions
                     {
                         builder.WithOrigins(
                             AppSettingsHelper.DESKTOP_APP_URI(configuration),
-                            AppSettingsHelper.WEBSITE_URI(configuration)
+                            AppSettingsHelper.WEBSITE_URI(configuration),
+                            AppSettingsHelper.MOBILE_APP_URI(configuration)
                         )
                         .AllowCredentials()
                         .AllowAnyMethod()
@@ -59,7 +60,8 @@ namespace Users.API.Extensions
                 {
                     AllowedOrigins = { 
                         AppSettingsHelper.DESKTOP_APP_URI(configuration),
-                        AppSettingsHelper.WEBSITE_URI(configuration)
+                        AppSettingsHelper.WEBSITE_URI(configuration),
+                        AppSettingsHelper.MOBILE_APP_URI(configuration),
                     }
                 };
             });
