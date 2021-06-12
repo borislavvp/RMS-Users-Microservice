@@ -76,6 +76,7 @@ namespace Users.API.Extensions
 
             services.ConfigureApplicationCookie(config =>
             {
+                config.Cookie.HttpOnly = true;
                 config.Cookie.Name = "IdentityServer.Cookie";
                 config.LoginPath = "/api/redirect/login";
                 config.LogoutPath = "/api/logout";

@@ -37,7 +37,6 @@ namespace Users.Data.Configuration
                 {
                     Scopes = { "proepwebsitegateway.fullaccess" }
                 },
-                new ApiResource("orders", "Orders Service")
                 new ApiResource("proepdriversgateway","Drivers App Gateway Service")
                 { 
                     Scopes = { "proepdriversgateway.fullaccess" }
@@ -87,7 +86,7 @@ namespace Users.Data.Configuration
                     RequireConsent = false,
                     ClientSecrets = { new Secret("1waer6ty-116e-2579-b65o-12357t14663m".Sha256()) },
                     AllowedScopes = {
-                         "openid", "profile", "orders.write" }
+                         "openid", "profile", "orders.read", "orders.write" }
                 },
                 new Client
                 {
