@@ -13,16 +13,16 @@ namespace Users.Data.Configuration
         public static readonly Func<IConfiguration, string> DATABASE_CONNECTION = (IConfiguration conf) => loadConnection(conf, "DefaultConnection");
         public static readonly Func<IConfiguration, string> AUTH_ISSUER = (IConfiguration conf) => loadSetting(conf, "ISSUER");
 
-        public static readonly Func<IConfiguration, string> DESKTOP_APP_NAME = (IConfiguration conf) => loadSetting(conf,"DESKTOP_APP_NAME");
+        public static readonly Func<IConfiguration, string> DESKTOP_APP_NAME = (IConfiguration conf) => loadSetting(conf, "DESKTOP_APP_NAME");
         public static readonly Func<IConfiguration, string> DESKTOP_APP_ID = (IConfiguration conf) => loadSetting(conf, "DESKTOP_APP_ID");
         public static readonly Func<IConfiguration, string> DESKTOP_APP_URI = (IConfiguration conf) => loadSetting(conf, "DESKTOP_APP_URI");
         public static readonly Func<IConfiguration, string> DESKTOP_APP_LOGIN_PATH = (IConfiguration conf) => loadSetting(conf, "DESKTOP_APP_LOGIN_PATH");
-        
+
         public static readonly Func<IConfiguration, string> WEBSITE_NAME = (IConfiguration conf) => loadSetting(conf, "WEBSITE_NAME");
         public static readonly Func<IConfiguration, string> WEBSITE_ID = (IConfiguration conf) => loadSetting(conf, "WEBSITE_ID");
         public static readonly Func<IConfiguration, string> WEBSITE_URI = (IConfiguration conf) => loadSetting(conf, "WEBSITE_URI");
-        public static readonly Func<IConfiguration, string> WEBSITE_LOGIN_PATH = (IConfiguration conf) => loadSetting(conf, "WEBSITE_LOGIN_PATH"); 
-        
+        public static readonly Func<IConfiguration, string> WEBSITE_LOGIN_PATH = (IConfiguration conf) => loadSetting(conf, "WEBSITE_LOGIN_PATH");
+
         public static readonly Func<IConfiguration, string> MOBILE_APP_NAME = (IConfiguration conf) => loadSetting(conf, "MOBILE_APP_NAME");
         public static readonly Func<IConfiguration, string> MOBILE_APP_ID = (IConfiguration conf) => loadSetting(conf, "MOBILE_APP_ID");
         public static readonly Func<IConfiguration, string> MOBILE_APP_URI = (IConfiguration conf) => loadSetting(conf, "MOBILE_APP_URI");
@@ -43,7 +43,7 @@ namespace Users.Data.Configuration
             };
 
 
-        private static string loadSetting(IConfiguration configuration,string key, string fallback = null)
+        private static string loadSetting(IConfiguration configuration, string key, string fallback = null)
         {
             try
             {
@@ -53,7 +53,6 @@ namespace Users.Data.Configuration
                 {
                     throw new FormatException($"AppSetting: {key} is empty");
                 }
-
                 return value;
             }
             catch (FormatException)
@@ -65,7 +64,7 @@ namespace Users.Data.Configuration
                 throw new Exception($"AppSetting: {key} is missing", ex);
             }
         }
-        private static string loadConnection(IConfiguration configuration,string key)
+        private static string loadConnection(IConfiguration configuration, string key)
         {
             try
             {

@@ -107,8 +107,8 @@ namespace Users.Service
                 return RequestResult.Failure("Invalid password!");
             }
 
-        } 
-        
+        }
+
         private async Task<IRequestResult> SignInUser(string userEmail)
         {
             var userToLogin = await _userManager.Users.Include(u => u.Role).Where(u => u.Email.Equals(userEmail)).FirstOrDefaultAsync();
@@ -124,8 +124,8 @@ namespace Users.Service
             {
                 ExpiresUtc = DateTimeOffset.UtcNow.AddHours(2),
                 AllowRefresh = true,
+                IsPersistent = true
             };
-           
             // This is going to set the auth cookie in the users browser
             await _signInManager.SignInAsync(userToLogin, props);
 
@@ -156,7 +156,7 @@ namespace Users.Service
         public async Task<IRequestResult<string>> GetLoginRedirectPageUriAsync(string returnUrl)
         {
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            
+
             if(context == null || await _clientStore.FindClientByIdAsync(context.Client.ClientId) == null)
             {
                 return RequestResult<string>.Failure("Invalid request!");
@@ -164,6 +164,6 @@ namespace Users.Service
 
             return RequestResult<string>.Success(AppSettingsHelper.CLIENT_LOGIN_PATH(_configuration, context.Client.ClientUri));
         }
-        
+
     }
 }
