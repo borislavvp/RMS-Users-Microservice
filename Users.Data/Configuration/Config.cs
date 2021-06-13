@@ -19,17 +19,23 @@ namespace Users.Data.Configuration
                 new ApiScope("orders.read"),
                 new ApiScope("orders.write"),
                 new ApiScope("meals.fullaccess"),
+                new ApiScope("meals.read"),
                 new ApiScope("basket.fullaccess"),
                 new ApiScope("proeprestaurantgateway.fullaccess"),
                 new ApiScope("proepdriversgateway.fullaccess"),
+                new ApiScope("proepwebsitegateway.fullaccess"),
           };
 
         public static IEnumerable<ApiResource> ApiResources =>
             new ApiResource[]
             {
-                new ApiResource("proeprestaurantgateway","Restaurant App Gateway Service")
+                new ApiResource("proeprestaurantgateway", "Restaurant App Gateway Service")
                 { 
                     Scopes = { "proeprestaurantgateway.fullaccess" }
+                },
+                new ApiResource("proepwebsitegateway", "Website Gateway Service")
+                {
+                    Scopes = { "proepwebsitegateway.fullaccess" }
                 },
                 new ApiResource("proepdriversgateway","Drivers App Gateway Service")
                 { 
@@ -37,13 +43,13 @@ namespace Users.Data.Configuration
                 },
                 new ApiResource("orders","Orders Service")
                 { 
-                    Scopes = { "orders.read" , "orders.write" }
+                    Scopes = { "orders.read", "orders.write" }
                 },
-                new ApiResource("meals","Meals Service")
+                new ApiResource("meals", "Meals Service")
                 {
-                    Scopes = { "meals.fullaccess" }
+                    Scopes = { "meals.read", "meals.fullaccess" }
                 },
-                new ApiResource("basket","Basket Service")
+                new ApiResource("basket", "Basket Service")
                 {
                     Scopes = { "basket.fullaccess" }
                 },
@@ -64,13 +70,23 @@ namespace Users.Data.Configuration
                 },
                 new Client
                 {
+                    ClientId = "proepwebsitegatewaytodownstreamtokenexchangeclient",
+                    ClientName = "Gateway to Downstream Token Exchange Client",
+                    AllowedGrantTypes = new[] { "urn:ietf:params:oauth:grant-type:token-exchange" },
+                    RequireConsent = false,
+                    ClientSecrets = { new Secret("0cdea0bc-779e-4368-b46b-09956f70712c".Sha256()) },
+                    AllowedScopes = {
+                         "openid", "profile", "meals.read", "basket.fullaccess", "orders.write" }
+                },
+                new Client
+                {
                     ClientId = "proepdriversgatewaytodownstreamtokenexchangeclient",
                     ClientName = "Gateway to Downstream Token Exchange Client",
                     AllowedGrantTypes = new[] { "urn:ietf:params:oauth:grant-type:token-exchange" },
                     RequireConsent = false,
                     ClientSecrets = { new Secret("1waer6ty-116e-2579-b65o-12357t14663m".Sha256()) },
                     AllowedScopes = {
-                         "openid", "profile", "orders.write" }
+                         "openid", "profile", "orders.read", "orders.write" }
                 },
                 new Client
                 {
@@ -160,7 +176,8 @@ namespace Users.Data.Configuration
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "proepwebsitegateway.fullaccess",
                     },
                     AllowedCorsOrigins =
                     {

@@ -84,10 +84,7 @@ namespace Users.API
                 MinimumSameSitePolicy = SameSiteMode.Lax,
                 Secure = CookieSecurePolicy.None
             });
-            //if (!Environment.IsDevelopment())
-            //{
-            //    app.UsePathBase(new PathString("/identity"));
-            //}
+
             app.UseRouting();
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
