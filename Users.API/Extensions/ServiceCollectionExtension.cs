@@ -58,7 +58,7 @@ namespace Users.API.Extensions
                 var logger = container.GetRequiredService<ILogger<DefaultCorsPolicyService>>();
                 return new DefaultCorsPolicyService(logger)
                 {
-                    AllowedOrigins = { 
+                    AllowedOrigins = {
                         AppSettingsHelper.DESKTOP_APP_URI(configuration),
                         AppSettingsHelper.WEBSITE_URI(configuration),
                         AppSettingsHelper.MOBILE_APP_URI(configuration),
@@ -76,13 +76,13 @@ namespace Users.API.Extensions
 
             services.ConfigureApplicationCookie(config =>
             {
-                config.Cookie.Name = "IdentityServer.Cookie";
                 config.LoginPath = "/api/redirect/login";
                 config.LogoutPath = "/api/logout";
                 config.AccessDeniedPath = "/api/redirect/login";
                 config.ClaimsIssuer = AppSettingsHelper.AUTH_ISSUER(configuration);
+                config.Cookie.IsEssential = true;
+                config.Cookie.HttpOnly = false;
             });
-
             services.AddIdentityServer(options =>
             {
                 options.IssuerUri = AppSettingsHelper.AUTH_ISSUER(configuration);
@@ -92,9 +92,9 @@ namespace Users.API.Extensions
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
                 options.EmitStaticAudienceClaim = true;
-                options.Authentication.CookieLifetime = TimeSpan.FromHours(1);
+                options.Authentication.CookieLifetime = TimeSpan.FromHours(2);
             })
-            .AddDeveloperSigningCredential()
+             .AddDeveloperSigningCredential()
             .AddAspNetIdentity<ApplicationUser>()
             .AddConfigurationStore(options =>
             {
