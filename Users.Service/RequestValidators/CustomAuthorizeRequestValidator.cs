@@ -21,16 +21,17 @@ namespace Users.Service.RequestValidators
         {
             var clientID = context.Result.ValidatedRequest.ClientId;
             var subject = context.Result.ValidatedRequest.Subject;
-            
-            if(
-               clientID.Equals(AppSettingsHelper.DESKTOP_APP_ID(_conf)) &&
-               !subject.IsInRole(RoleConstants.ChorbaDeckAdmin)
-               )
-            {
-                context.Result.IsError = true;
-                context.Result.ErrorDescription = "Access denied!";
-                context.Result.Error = "Unauthorized";
-            }
+            Console.WriteLine("CLIENT ID");
+            Console.WriteLine(clientID);
+            //if(
+            //   clientID.Equals(AppSettingsHelper.DESKTOP_APP_ID(_conf)) &&
+            //   !subject.IsInRole(RoleConstants.ChorbaDeckAdmin)
+            //   )
+            //{
+            //    context.Result.IsError = true;
+            //    context.Result.ErrorDescription = "Access denied!";
+            //    context.Result.Error = "Unauthorized";
+            //}
             return Task.CompletedTask;
         }
     }

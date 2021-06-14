@@ -30,7 +30,7 @@ namespace Users.Data.Configuration
             new ApiResource[]
             {
                 new ApiResource("proeprestaurantgateway", "Restaurant App Gateway Service")
-                { 
+                {
                     Scopes = { "proeprestaurantgateway.fullaccess" }
                 },
                 new ApiResource("proepwebsitegateway", "Website Gateway Service")
@@ -38,11 +38,11 @@ namespace Users.Data.Configuration
                     Scopes = { "proepwebsitegateway.fullaccess" }
                 },
                 new ApiResource("proepdriversgateway","Drivers App Gateway Service")
-                { 
+                {
                     Scopes = { "proepdriversgateway.fullaccess" }
                 },
                 new ApiResource("orders","Orders Service")
-                { 
+                {
                     Scopes = { "orders.read", "orders.write" }
                 },
                 new ApiResource("meals", "Meals Service")
@@ -56,7 +56,7 @@ namespace Users.Data.Configuration
             };
 
         public static IEnumerable<Client> Clients(IConfiguration configuration) =>
-            new Client[] 
+            new Client[]
             {
                 new Client
                 {
@@ -74,9 +74,9 @@ namespace Users.Data.Configuration
                     ClientName = "Gateway to Downstream Token Exchange Client",
                     AllowedGrantTypes = new[] { "urn:ietf:params:oauth:grant-type:token-exchange" },
                     RequireConsent = false,
-                    ClientSecrets = { new Secret("0cdea0bc-779e-4368-b46b-09956f70712c".Sha256()) },
+                    ClientSecrets = { new Secret("4edwe2qc-992u-1157-t57h-86539r11284g".Sha256()) },
                     AllowedScopes = {
-                         "openid", "profile", "meals.read", "basket.fullaccess", "orders.write" }
+                         "openid", "profile", "meals.read", "basket.fullaccess", "orders.read","orders.write" }
                 },
                 new Client
                 {
@@ -102,12 +102,12 @@ namespace Users.Data.Configuration
                     RequireConsent = false,
                     RedirectUris = new List<string>()
                     {
-                        $"{AppSettingsHelper.DESKTOP_APP_URI(configuration)}/signin-oidc",
-                        $"{AppSettingsHelper.DESKTOP_APP_URI(configuration)}/assets/silent-callback.html",
+                        $"{AppSettingsHelper.DESKTOP_APP_URI(configuration)}/restaurant/signin-oidc",
+                        $"{AppSettingsHelper.DESKTOP_APP_URI(configuration)}/restaurant/assets/silent-callback.html",
                     },
                     PostLogoutRedirectUris = new List<string>()
                     {
-                        $"{AppSettingsHelper.DESKTOP_APP_URI(configuration)}/signout-callback-oidc"
+                        $"{AppSettingsHelper.DESKTOP_APP_URI(configuration)}/restaurant/signout-callback-oidc"
                     },
                     AllowedScopes =
                     {
@@ -119,7 +119,7 @@ namespace Users.Data.Configuration
                     {
                         AppSettingsHelper.DESKTOP_APP_URI(configuration)
                     }
-                }, 
+                },
                 new Client
                 {
                     AccessTokenLifetime = 60*60*2, // 2 hours
@@ -134,12 +134,12 @@ namespace Users.Data.Configuration
                     RequireConsent = false,
                     RedirectUris = new List<string>()
                     {
-                        $"{AppSettingsHelper.MOBILE_APP_URI(configuration)}/signin-oidc",
-                        $"{AppSettingsHelper.MOBILE_APP_URI(configuration)}/assets/silent-callback.html",
+                        $"{AppSettingsHelper.MOBILE_APP_URI(configuration)}/drivers/signin-oidc",
+                        $"{AppSettingsHelper.MOBILE_APP_URI(configuration)}/drivers/assets/silent-callback.html",
                     },
                     PostLogoutRedirectUris = new List<string>()
                     {
-                        $"{AppSettingsHelper.MOBILE_APP_URI(configuration)}/signout-callback-oidc"
+                        $"{AppSettingsHelper.MOBILE_APP_URI(configuration)}/drivers/signout-callback-oidc"
                     },
                     AllowedScopes =
                     {
@@ -166,12 +166,12 @@ namespace Users.Data.Configuration
                     RequireConsent = false,
                     RedirectUris = new List<string>()
                     {
-                        $"{AppSettingsHelper.WEBSITE_URI(configuration)}/signin-oidc",
-                        $"{AppSettingsHelper.WEBSITE_URI(configuration)}/assets/silent-callback.html",
+                        $"{AppSettingsHelper.WEBSITE_URI(configuration)}/website/signin-oidc",
+                        $"{AppSettingsHelper.WEBSITE_URI(configuration)}/website/assets/silent-callback.html",
                     },
                     PostLogoutRedirectUris = new List<string>()
                     {
-                        $"{AppSettingsHelper.WEBSITE_URI(configuration)}/signout-callback-oidc"
+                        $"{AppSettingsHelper.WEBSITE_URI(configuration)}/website/signout-callback-oidc"
                     },
                     AllowedScopes =
                     {

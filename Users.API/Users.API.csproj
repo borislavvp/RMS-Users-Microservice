@@ -27,7 +27,4 @@
     <ProjectReference Include="..\Users.Data\Users.Data.csproj" />
     <ProjectReference Include="..\Users.Service\Users.Service.csproj" />
   </ItemGroup>
-  <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish">
-    <Copy SourceFiles="certs/Users.API.pfx" DestinationFolder="$(PublishDir)" />
-  </Target>
 </Project>

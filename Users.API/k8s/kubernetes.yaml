@@ -17,6 +17,6 @@ spec:
     spec:
       containers:
       - name: identity
-        image: acrproep01.azurecr.io/identity:v3.4
+        image: acrproep01.azurecr.io/identity:v4.1
         ports:
         - containerPort: 80
