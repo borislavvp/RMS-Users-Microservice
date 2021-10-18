@@ -1,25 +1,42 @@
-﻿using IdentityServer4.Services;
+﻿using IdentityServer4;
+using IdentityServer4.Extensions;
+using IdentityServer4.Hosting;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations.Internal;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Reflection;
-using Users.API.Controllers;
-using Users.Data;
-using Users.Data.Models;
-using Users.Data.Seed;
+using System.Threading.Tasks;
+using Users.API.Extensions;
+using Users.Service;
+using Users.Service.Profile;
+using Users.Service.RequestValidators;
 
 namespace Users.API
 {
+    public class PublicFacingUrlMiddleware
+    {
+        private readonly RequestDelegate _next;
+        private readonly string _publicFacingUri;
+
+        public PublicFacingUrlMiddleware(RequestDelegate next)
+        {
+            _next = next;
+        }
+
+        public async Task Invoke(HttpContext context)
+        {
+            var request = context.Request;
+
+            context.SetIdentityServerOrigin($@"{context.Request.Scheme}://{context.Request.Host.Value}/api/v1/identity");
+            context.SetIdentityServerBasePath(request.PathBase.Value.TrimEnd('/'));
+
+            await _next(context);
+        }
+    }
     public class Startup
     {
         public IWebHostEnvironment Environment { get; }
@@ -33,113 +50,62 @@ namespace Users.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddAuthentication();
+
             services.AddDbContext(Configuration);
             services.AddControllers();
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationUsersDbContext>()
-                .AddDefaultTokenProviders();
-            services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(
-                    builder =>
-                    {
-                        builder.WithOrigins("http://localhost:4200");
-                    });
-            });
-            //services.AddCors(options =>
-            //{
-            //    options.AddPolicy("CorsPolicy",
-            //        builder => builder
-            //        .SetIsOriginAllowed((host) => true)
-            //        .WithOrigins("http://localhost:4200")
-            //        .AllowAnyMethod()
-            //        .AllowAnyHeader()
-            //        .AllowCredentials());
-            //});
-            services.AddSingleton<ICorsPolicyService>((container) => {
-                var logger = container.GetRequiredService<ILogger<DefaultCorsPolicyService>>();
-                return new DefaultCorsPolicyService(logger)
-                {
-                    AllowedOrigins = { "http://localhost:4200" }
-                };
-            });
             services.AddScoped<IProfileService, ProfileService>();
+            services.AddScoped<UsersService, UsersService>();
 
-            services.AddIdentityServer(options =>
-            {
-                options.Events.RaiseErrorEvents = true;
-                options.Events.RaiseInformationEvents = true;
-                options.Events.RaiseFailureEvents = true;
-                options.Events.RaiseSuccessEvents = true;
-                // see https://identityserver4.readthedocs.io/en/latest/topics/resources.html
-                options.EmitStaticAudienceClaim = true;
-                options.Authentication.CookieLifetime = TimeSpan.FromHours(2);
-            })
-            .AddDeveloperSigningCredential()
-            .AddAspNetIdentity<ApplicationUser>()
-            .AddConfigurationStore(options =>
-            {
-                options.ConfigureDbContext = builder => builder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
-                    sqlServerOptionsAction: sqlOptions =>
-                    {
-                        sqlOptions.MigrationsAssembly(Assembly.GetAssembly(typeof(ApplicationUsersDbContext)).GetName().Name);
-                        //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
-                        sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                    });
-            })
-            .AddOperationalStore(options =>
-            {
-                options.ConfigureDbContext = builder => builder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
-                    sqlServerOptionsAction: sqlOptions =>
-                    {
-                        sqlOptions.MigrationsAssembly(Assembly.GetAssembly(typeof(ApplicationUsersDbContext)).GetName().Name);
-                        //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
-                        sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                    });
-            })
-            .Services.AddTransient<IProfileService, ProfileService>();
+            // if (Environment.IsDevelopment())
+            // {
+            services.SetupDevelopmentCorsPolicies(Configuration);
+            // }
 
-            // not recommended for production - you need to store your key material somewhere secure
-            //builder.AddDeveloperSigningCredential();
+            services.SetupIdentityServer(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
+            if (!Environment.IsDevelopment())
+            {
+                app.UseMiddleware<PublicFacingUrlMiddleware>();
+            }
+
             app.UseCors();
             if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                MinimumSameSitePolicy = SameSiteMode.Lax,
+                Secure = CookieSecurePolicy.None
+            });
 
-            // uncomment if you want to add MVC
-            //app.UseStaticFiles();
             app.UseRouting();
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedProto
+            });
 
-            app.UseIdentityServer();
-            app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.Lax });
-            // uncomment, if you want to add MVC
-            //app.UseAuthorization();
+            if (Environment.IsDevelopment())
+            {
+                app.UseIdentityServer();
+            }
+            else
+            {
+                app.UseMiddleware<IdentityServerMiddleware>();
+            }
+
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
             });
         }
     }
-    static class StartupExtensionMethods
-    {
-        public static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddDbContext<ApplicationUsersDbContext>(options =>
-                    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
-                    sqlServerOptionsAction: sqlOptions =>
-                    {
-                        sqlOptions.MigrationsAssembly(Assembly.GetAssembly(typeof(ApplicationUsersDbContext)).GetName().Name);
-                        sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                    }));
 
-            return services;
-        }
-
-    }
 }

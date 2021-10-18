@@ -212,8 +212,7 @@ namespace Users.Data.Migrations.ApplicationUsersDb
 
                     b.Property<string>("Subject")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
@@ -233,6 +232,9 @@ namespace Users.Data.Migrations.ApplicationUsersDb
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.HasIndex("RoleId");
+
+                    b.HasIndex("Subject")
+                        .IsUnique();
 
                     b.ToTable("AspNetUsers");
                 });

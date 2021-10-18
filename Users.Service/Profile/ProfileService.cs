@@ -2,6 +2,7 @@
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,7 +11,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Users.Data.Models;
 
-namespace Users.API.Controllers
+namespace Users.Service.Profile
 {
     public class ProfileService : IProfileService
     {
@@ -27,7 +28,7 @@ namespace Users.API.Controllers
 
             var subjectId = subject.Claims.Where(x => x.Type == "sub").FirstOrDefault().Value;
 
-            var user = await _userManager.FindByIdAsync(subjectId);
+            var user = await _userManager.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == subjectId);
             if (user == null)
                 throw new ArgumentException("Invalid subject identifier");
 
@@ -85,7 +86,7 @@ namespace Users.API.Controllers
 
             if (!string.IsNullOrWhiteSpace(user.Role.Name))
                 claims.Add(new Claim("role", user.Role.Name));
-            
+
             if (!string.IsNullOrWhiteSpace(user.UserName))
                 claims.Add(new Claim("UserName", user.UserName));
 
